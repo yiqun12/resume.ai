@@ -1,0 +1,150 @@
+.scrolling-wrapper-filter {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+
+}
+
+.scrolling-wrapper-filter::-webkit-scrollbar {
+  width: 0
+}
+
+.scroll-gradient-left {
+  width: 65px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+}
+
+.scroll-gradient-right {
+  width: 65px;
+  background: linear-gradient(to left,  rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+}
+
+.container_search {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e1e4e8;
+  /* adjust as needed */
+  border-radius: 2rem;
+  padding: 1px;
+  margin-top: 5px;
+  padding-bottom: 2px;
+  width: 100%;
+}
+
+
+.searchInputWrapper {
+  position: relative;
+}
+
+.searchInput {
+  flex: 1;
+  margin: 10px;
+  padding: 0 1rem;
+  border-radius: 3rem;
+  padding-right: 30px;
+  /* Adjust this value to move the text away from the icon */
+  border: none;
+  transition: transform 0.1s ease-in-out;
+}
+
+::placeholder {
+  color: #a1a1a1;
+}
+
+/* hide the placeholder text on focus */
+:focus::placeholder {
+  text-indent: -999px
+}
+
+
+.searchInputIcon {
+  position: absolute;
+  right: 0.8rem;
+  top: 0.5rem;
+  color: #a1a1a1;
+  transition: all 0.1s ease-in-out;
+}
+
+
+.myCustomHeight {
+  height: calc(100% - 100px);
+  /* Default height */
+}
+
+@media screen and (min-width: 768px) {
+  .myCustomHeight {
+    height: calc(100% - 125px);
+    /* Height for medium devices and up */
+  }
+}
+
+.food-item-container {
+  position: relative;
+  /* This enables absolute positioning for children */
+  width: 300px;
+  /* Adjust as needed */
+  height: 200px;
+  /* Adjust as needed */
+}
+
+.food-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* This makes sure the image covers the div */
+}
+
+.order-button {
+  position: absolute;
+  /* Absolute positioning relative to the parent */
+  bottom: 10px;
+  /* Positioning the button at the bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  /* Centering the button */
+  z-index: 1;
+  /* Ensures the button is above the image */
+}
+
+
+/* Modal.css */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fadeInOut 1s forwards;
+  /* Animation for fade in and fade out */
+}
+
+.modal-content_ {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 150px;
+  text-align: center;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}

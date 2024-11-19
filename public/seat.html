@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title> Restaurant reservation system</title>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>
+  <link rel='stylesheet' href='https://cdn.rawgit.com/leongersen/noUiSlider/master/distribute/nouislider.min.css'>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    .col-sm-2.col-sm-offset-3.form-group {
+      display: none;
+    }
+  </style>
+</head>
+
+<body onload="loadingFunction(); ">
+
+  <!-- Table Modal -->
+  <div id="addTableModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Add Dining Table</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <label for="tableName">Dining Table Name:</label>
+          <input type="text" id="tableName" class="form-control">
+          <!-- You can add more content/form here related to adding table -->
+        </div>
+        <div id="modalAlert" class="alert alert-warning" style="display: none; margin-top: 10px;">
+          <span id="emptyNameAlert" style="display: none;">Dining Table name cannot be empty!</span>
+          <span id="duplicateNameAlert" style="display: none;">Dining Table name already exists on the board. Please
+            choose
+            another name.</span>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="addTableBtn">Add</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- partial:index.partial.html -->
+  <div class="container-fluid text-center" style="padding: 0; overflow: hidden; height: 100%;">
+    <div class="form-group admin-menu"
+      style="display: none;height: 100%; overflow-y: scroll; padding-right: 17px; box-sizing: content-box;">
+      <div class="row">
+        <div class="col-sm-2 col-sm-offset-3 form-group">
+          <label>Width (px)</label>
+          <input type="number" id="width" class="form-control" />
+        </div>
+        <div class="col-sm-2 col-sm-offset-3 form-group">
+          <label>Height (px)</label>
+          <input type="number" id="height" class="form-control" />
+        </div>
+      </div>
+      <!-- <div class="col-sm-2 form-group" style="display: flex;justify-content: center; align-items: center; width: 100%;"> -->
+      <!-- <button class="btn btn-primary" onclick="saveBoard()">Save</button> -->
+      <!-- <button class="btn btn-danger" onclick="clearBoard(); saveBoard();">Clear</button> -->
+      <!-- </div> -->
+      <div class="btn-group" style="width: 100%;">
+        <!-- float: left will make these buttons align to the left -->
+        <button class="btn btn-primary rectangle" style="float: left;"> <i class="bi bi-square-fill"></i></i> &nbsp;Add
+          Square Dining Table</button>
+        <button class="btn btn-primary circle" style="float: left;"> <i class="bi bi-circle-half"></i> &nbsp;Add
+          Circular Dining Table</button>
+        <button class="btn btn-primary chair hide" style="float: left;">+ Chair</button>
+        <!-- float: left will make these buttons align to the left -->
+        <!-- <button class="btn btn-primary bar" style="float: left;">+ Bar</button> -->
+        <button class="btn btn-default wall hide" style="float: left;">+ Wall</button>
+
+        <!-- float: right will make these buttons align to the right -->
+        <button class="btn btn-danger remove" style="float: left;"><i class="bi bi-trash-fill"></i></i>
+          &nbsp;Delete</button>
+        <button class="btn btn-success save-mode" style="float: right; "><i class="bi bi-cloud-upload-fill"></i></i>
+          &nbsp;Save Change</button>
+        <button class="btn btn-info customer-mode" style="float: right; margin-right: 5px;"><i
+            class="bi bi-shield-exclamation"></i></i>
+          &nbsp;Discard Changes</button>
+      </div>
+
+    </div>
+
+    <div class="form-group customer-menu">
+
+      <div id="slider"></div>
+      <div id="slider-value"></div>
+    </div>
+    <div id="canvas-container" style="overflow: auto; ">
+
+      <canvas id="canvas" ></canvas>
+    </div>
+
+  </div>
+
+  <div class="modal fade" id="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body text-center">
+          <p id="modal-table-id"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-group admin_hello" style="width: 100%; margin-top: 20px;">
+    <!-- <button class="btn btn-primary" onclick="saveBoard()">Save</button>
+    <button class="btn btn-primary" onclick="loadBoard()">Load</button> -->
+    <button class="btn btn-danger admin-mode" style="text-align: left;"><i class="bi bi-person-circle"></i></i>
+      &nbsp;Admin Mode</button>
+  </div>
+
+  <!-- partial -->
+  <!-- <script src='https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.7.11/fabric.min.js'></script> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.5.0/fabric.min.js"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+  <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
+
+  <script src='https://cdn.rawgit.com/leongersen/noUiSlider/master/distribute/nouislider.min.js'></script>
+
+  <script>
+    // When the page loads
+    function updateDimensions() {
+      document.getElementById('width').value = window.innerWidth;
+      document.getElementById('height').value = window.innerHeight;
+    }
+
+    // Update dimensions on load
+    window.onload = updateDimensions;
+
+    // Update dimensions whenever the window is resized
+    window.onresize = updateDimensions;
+
+
+    let store
+    let canvas
+    let tableNumber = 1
+    let chairNumber = 1
+    // let barNumber = 1
+    let wallNumber = 1
+    const grid = 30
+    const backgroundColor = '#f8f8f8'
+    const lineStroke = '#ebebeb'
+    const tableFill = 'rgba(150, 111, 51, 0.7)'
+    const tableStroke = '#694d23'
+    const tableShadow = 'rgba(0, 0, 0, 0.4) 3px 3px 7px'
+    const chairFill = 'rgba(67, 42, 4, 0.7)'
+    const chairStroke = '#32230b'
+    const chairShadow = 'rgba(0, 0, 0, 0.4) 3px 3px 7px'
+    // const barFill = 'rgba(0, 93, 127, 0.7)'
+    // const barStroke = '#003e54'
+    // const barShadow = 'rgba(0, 0, 0, 0.4) 3px 3px 7px'
+    // const barText = 'Bar'
+    const wallFill = 'rgba(136, 136, 136, 0.7)'
+    const wallStroke = '#686868'
+    const wallShadow = 'rgba(0, 0, 0, 0.4) 5px 5px 20px'
+
+    let widthEl = document.getElementById('width')
+    let heightEl = document.getElementById('height')
+    let canvasEl = document.getElementById('canvas')
+
+    let board = {
+      'table': [],
+      'chair': [],
+      // 'bar': [],
+      'wall': [],
+    }
+
+    // let external_board = {
+    //   'table': [],
+    //   'chair': [],
+    //   'bar': [],
+    //   'wall': [],
+    // }
+    window.addEventListener('message', function (event) {
+      if (event.data.includes("_restaurant_seat_arrangement")) {
+        store = event.data
+
+        loadBoard()
+        // console.log("sasssssssssssssssssssssssssssss")
+        readDemoItems();
+        canvas.getObjects().map(o => {
+          o.hasControls = false
+          o.lockMovementX = true
+          o.lockMovementY = true
+          // if (o.type === 'chair' || o.type === 'bar' || o.type === 'wall') {
+
+          if (o.type === 'chair' || o.type === 'wall') {
+            o.selectable = false
+          }
+          o.borderColor = '#38A62E'
+          o.borderScaleFactor = 2.5
+        })
+        canvas.selection = false
+        canvas.hoverCursor = 'pointer'
+        canvas.discardActiveObject()
+        canvas.renderAll()
+        document.querySelectorAll('.admin-menu')[0].style.display = 'none'
+        document.querySelectorAll('.customer-menu')[0].style.display = 'block'
+
+        current_mode = "customer"
+        window.parent.postMessage(`customer mode active`, "*");
+        //console.log('Received "hello" from parent');
+      } else if (event.data.includes("load_board")) {
+
+      }
+    });
+
+
+    function saveBoard() {
+      console.log("save board")
+      console.log(board)
+
+      // this is where you save the board to an external js
+      window.localStorage.setItem(store, JSON.stringify(board));
+      // external_board = board
+    }
+
+    function loadBoard() {
+      console.log("load board")
+      console.log(board)
+      clearBoard()
+
+
+      // this is where you read external (previously saved board data and load it in)
+
+      let arrangement = JSON.parse(window.localStorage.getItem(store))
+
+      addDefaultObjects(arrangement)
+    }
+
+    function clearBoard() {
+      console.log("clear board")
+      board = {
+        'table': [],
+        'chair': [],
+        // 'bar': [],
+        'wall': [],
+      }
+      resizeCanvas()
+      initCanvas()
+      //saveBoard()
+    }
+
+    // document.addEventListener("DOMContentLoaded", function () {
+    //   console.log("hello");
+
+    //   setTimeout(function () {
+    //     var loadButton = document.querySelector('.btn-primary[onclick="loadBoard()"]');
+
+    //     // Simulate a click on the button
+    //     loadButton.click();
+
+    //          var adminModeButton = document.querySelector('.customer-mode');
+
+    //         // Simulate a click on the button
+    //         adminModeButton.click(); 
+    //   }, 1); // 0.5 second delay
+    // });
+
+
+    function loadingFunction() {
+      resizeCanvas()
+      initCanvas()
+
+
+    }
+
+    function initCanvas() {
+      if (canvas) {
+        canvas.clear()
+        canvas.dispose()
+      }
+
+      canvas = new fabric.Canvas('canvas')
+      tableNumber = 1
+      chairNumber = 1
+      // barNumber = 1
+      wallNumber = 1
+      canvas.backgroundColor = backgroundColor
+
+      for (let i = 0; i < (canvas.width / grid); i++) {
+        const lineX = new fabric.Line([0, i * grid, canvas.width, i * grid], {
+          stroke: lineStroke,
+          selectable: false,
+          type: 'line'
+        })
+        const lineY = new fabric.Line([i * grid, 0, i * grid, canvas.width], {
+          stroke: lineStroke,
+          selectable: false,
+          type: 'line'
+        })
+        sendLinesToBack()
+        canvas.add(lineX)
+        canvas.add(lineY)
+      }
+
+      // ********* // 
+      // this has to be inside initCanvas() so that every Newly created canvas has this functionality
+      function handleCanvasEvents(canvas) {
+        canvas.on('mouse:down', function (options) {
+          handleEvent(options);
+        });
+
+        canvas.on('touch:start', function (options) {
+          handleEvent(options);
+        });
+
+        canvas.on('touch:gesture', function (options) {
+          handleEvent(options);
+        });
+
+        canvas.on('object:moving', function (e) {
+          snapToGrid(e.target);
+          checkBoudningBox(e);
+        });
+
+        canvas.on('object:scaling', function (e) {
+          handleScaling(e.target);
+          checkBoudningBox(e);
+        });
+
+        canvas.on('object:modified', function (e) {
+          handleModified(e.target);
+          checkBoudningBox(e);
+        });
+
+        function handleEvent(options) {
+
+          console.log('Event Triggered:', options.e.type); // Log the event type
+          console.log("Options for ", options.e.type, " : ", options)
+          console.log("Options.target for ", options.e.type, " : ", options.target)
+
+
+          if (current_mode === "customer") {
+            if (!options.target) {
+              canvas.discardActiveObject().renderAll();
+              window.parent.postMessage(`table_deselected`, "*");
+              console.log("Deselected")
+            }
+            if (options.target?.type === "rect" || options.target?.type === "circle") {
+              window.parent.postMessage(`selected_table ${options.target.tableName}`, "*");
+            }
+          }
+        }
+
+        function handleScaling(target) {
+          if (target.scaleX > 5) {
+            target.scaleX = 5;
+          }
+          if (target.scaleY > 5) {
+            target.scaleY = 5;
+          }
+          if (!target.strokeWidthUnscaled && target.strokeWidth) {
+            target.strokeWidthUnscaled = target.strokeWidth;
+          }
+          if (target.strokeWidthUnscaled) {
+            target.strokeWidth = target.strokeWidthUnscaled / target.scaleX;
+            if (target.strokeWidth === target.strokeWidthUnscaled) {
+              target.strokeWidth = target.strokeWidthUnscaled / target.scaleY;
+            }
+          }
+        }
+
+        function handleModified(target) {
+          target.scaleX = target.scaleX >= 0.25 ? (Math.round(target.scaleX * 2) / 2) : 0.5;
+          target.scaleY = target.scaleY >= 0.25 ? (Math.round(target.scaleY * 2) / 2) : 0.5;
+
+          snapToGrid(target);
+          if (target.type === 'table') {
+            canvas.bringToFront(target);
+          } else {
+            canvas.sendToBack(target);
+          }
+          sendLinesToBack();
+        }
+      }
+
+      // Call handleCanvasEvents with your canvas object
+      // var canvas = new fabric.Canvas('your-canvas-element-id');
+      handleCanvasEvents(canvas);
+      // ********** // this segment and below code is similar
+
+      // // this has to be inside initCanvas() so that every Newly created canvas has this functionality
+      // // when the blank canvas is clicked and the shapes are deselected, it sends a message to the parent
+      // canvas.on('mouse:down', function (options) {
+      //   // console.log("mouse down")
+      //   // when the target doesn't exist (IE just the canvas)
+      //   if (current_mode === "customer") {
+      //     // console.log(options.target)
+      //     if (!options.target) {
+      //       // console.log("mouse down on canvas")
+      //       canvas.discardActiveObject().renderAll();
+      //       window.parent.postMessage(`table_deselected`, "*");
+      //     }
+      //     if (options.target?.type === "rect" || options.target?.type === "circle") {
+      //       // console.log(options.target.tableName)
+      //       window.parent.postMessage(`selected_table ${options.target.tableName}`, "*");
+      //     }
+      //   }
+      // });
+      // canvas.on('touch:start', function (options) {
+      //   // console.log("mouse down")
+      //   // when the target doesn't exist (IE just the canvas)
+      //   if (current_mode === "customer") {
+      //     // console.log(options.target)
+      //     if (!options.target) {
+      //       // console.log("mouse down on canvas")
+      //       canvas.discardActiveObject().renderAll();
+      //       window.parent.postMessage(`table_deselected`, "*");
+      //     }
+      //     if (options.target?.type === "rect" || options.target?.type === "circle") {
+      //       // console.log(options.target.tableName)
+      //       window.parent.postMessage(`selected_table ${options.target.tableName}`, "*");
+      //     }
+      //   }
+      // });
+      // canvas.on('object:moving', function (e) {
+      //   snapToGrid(e.target)
+      // })
+
+      // canvas.on('object:scaling', function (e) {
+      //   if (e.target.scaleX > 5) {
+      //     e.target.scaleX = 5
+      //   }
+      //   if (e.target.scaleY > 5) {
+      //     e.target.scaleY = 5
+      //   }
+      //   if (!e.target.strokeWidthUnscaled && e.target.strokeWidth) {
+      //     e.target.strokeWidthUnscaled = e.target.strokeWidth
+      //   }
+      //   if (e.target.strokeWidthUnscaled) {
+      //     e.target.strokeWidth = e.target.strokeWidthUnscaled / e.target.scaleX
+      //     if (e.target.strokeWidth === e.target.strokeWidthUnscaled) {
+      //       e.target.strokeWidth = e.target.strokeWidthUnscaled / e.target.scaleY
+      //     }
+      //   }
+      // })
+
+      // canvas.on('object:modified', function (e) {
+      //   e.target.scaleX = e.target.scaleX >= 0.25 ? (Math.round(e.target.scaleX * 2) / 2) : 0.5
+      //   e.target.scaleY = e.target.scaleY >= 0.25 ? (Math.round(e.target.scaleY * 2) / 2) : 0.5
+
+      //   snapToGrid(e.target)
+      //   if (e.target.type === 'table') {
+      //     canvas.bringToFront(e.target)
+      //   }
+      //   else {
+      //     canvas.sendToBack(e.target)
+      //   }
+      //   sendLinesToBack()
+      // })
+
+      // canvas.observe('object:moving', function (e) {
+      //   checkBoudningBox(e)
+      // })
+      // canvas.observe('object:rotating', function (e) {
+      //   checkBoudningBox(e)
+      // })
+      // canvas.observe('object:scaling', function (e) {
+      //   checkBoudningBox(e)
+      // })
+    }
+    initCanvas()
+
+    function resizeCanvas() {
+      widthEl = document.getElementById('width')
+      heightEl = document.getElementById('height')
+      canvasEl.width = 2000
+      canvasEl.height = 812
+      const canvasContainerEl = document.querySelectorAll('.canvas-container')[0]
+      canvasContainerEl.style.width = canvasEl.width
+      canvasContainerEl.style.height = canvasEl.height
+    }
+    resizeCanvas()
+
+
+    widthEl.addEventListener('change', () => {
+      resizeCanvas()
+      initCanvas()
+      addDefaultObjects()
+    })
+    heightEl.addEventListener('change', () => {
+      resizeCanvas()
+      initCanvas()
+      addDefaultObjects()
+    })
+
+    function generateId() {
+      return Math.random().toString(36).substr(2, 8)
+    }
+
+    // added default parameters for scaleX and scaleY, so if no values are given for those, it'll default to 1
+    function addRect(left, top, width, height, scaleX = 1, scaleY = 1, tableName, id = "xxxx", snapAngle = 45, angle = 0) {
+      const generated_id = generateId()
+      if (id === "xxxx") {
+        id = generated_id
+      }
+
+      // TODO: Find the bug that is increase width and height by 2 everytime save+load is activated (might be just one of these functions)
+
+      // current braindead solution to a hard to solve problem
+      // the width & height increments by 2 everything save + load is used
+      width = width - 2;
+      height = height - 2;
+
+      // console.log("width: ", width)
+      // console.log("height: ", height)
+      const o = new fabric.Rect({
+        width: width,
+        height: height,
+        fill: tableFill,
+        stroke: tableStroke,
+        strokeWidth: 2,
+        shadow: tableShadow,
+        originX: 'center',
+        originY: 'center',
+        centeredRotation: true,
+        snapAngle: snapAngle,
+        selectable: true,
+        angle: angle
+      })
+      const t = new fabric.IText(tableName, {
+        fontFamily: 'Calibri',
+        fontSize: 14,
+        fill: '#fff',
+        textAlign: 'center',
+        originX: 'center',
+        originY: 'center'
+      })
+
+      //       // Store original fontSize
+      // t.originalFontSize = t.fontSize;
+
+      const g = new fabric.Group([o, t], {
+        left: left,
+        top: top,
+        centeredRotation: true,
+        snapAngle: snapAngle,
+        selectable: true,
+        type: 'rect',
+        id: id,
+        number: tableNumber,
+        tableName: tableName,
+        scaleX: scaleX,
+        scaleY: scaleY
+      })
+
+      /* TODO:  Fix the sizes of the text so that it doesn't scale with the shape
+  */
+
+      //       // this on() triggers when the group is scaled
+      // g.on('scaling', function() {
+      //     // Adjust the fontSize of the text inside the group to counteract the group's scaling
+      //     t.fontSize = t.originalFontSize / g.scaleX;
+      //     t.setCoords(); // Refresh text coordinates
+      // });
+
+
+
+      // this on() triggers when the table is selected
+      g.on("selected", function () {
+        // this.number returns the number, this returns the whole item
+        console.log("This is table ", this.tableName);
+        const selectedTable = this.tableName;
+        if (current_mode === "customer")
+          window.parent.postMessage(`selected_table ${selectedTable}`, "*");
+
+        // highlightTable("A2", 'red'); // This will change the background color of 'Table 1' to red
+        // console.log("The tableName is", tableName.trim(), "hello")
+      })
+      canvas.add(g)
+
+
+      object = {
+        type: "rect",
+        left: g.left,
+        top: g.top,
+        width: g.width,
+        height: g.height,
+        scaleX: g.scaleX,
+        scaleY: g.scaleY,
+        tableName: tableName,
+        id: g.id,
+        snapAngle: g.snapAngle,
+        angle: o.angle
+      }
+      board.table.push(object)
+      console.log(object)
+      // console.log(board)
+      tableNumber++
+
+      // saving the board after object creation
+      saveBoard()
+
+      return g
+    }
+
+    function addCircle(left, top, radius, scaleX = 1, scaleY = 1, tableName, id = "xxxx", snapAngle = 45, angle = 0) {
+      const generated_id = generateId()
+      if (id === "xxxx") {
+        id = generated_id
+      }
+
+      const o = new fabric.Circle({
+        radius: radius,
+        fill: tableFill,
+        stroke: tableStroke,
+        strokeWidth: 2,
+        shadow: tableShadow,
+        originX: 'center',
+        originY: 'center',
+        centeredRotation: true,
+        angle: angle
+      })
+      const t = new fabric.IText(tableName, {
+        fontFamily: 'Calibri',
+        fontSize: 14,
+        fill: '#fff',
+        textAlign: 'center',
+        originX: 'center',
+        originY: 'center'
+      })
+
+      // // Store original fontSize
+      // t.originalFontSize = t.fontSize;
+
+      const g = new fabric.Group([o, t], {
+        left: left,
+        top: top,
+        centeredRotation: true,
+        snapAngle: snapAngle,
+        selectable: true,
+        type: 'circle',
+        id: id,
+        number: tableNumber,
+        tableName: tableName,
+        scaleX: scaleX,
+        scaleY: scaleY,
+        radius: radius,
+      })
+      // this on() triggers when the table is selected
+      g.on("selected", function () {
+        // this.number returns the number, this returns the whole item
+        console.log("This is table ", this.tableName);
+        const selectedTable = this.tableName;
+        if (current_mode === "customer")
+          window.parent.postMessage(`selected_table ${selectedTable}`, "*");
+      })
+
+
+      canvas.add(g)
+      object = {
+        type: "circle",
+        left: g.left,
+        top: g.top,
+        radius: g.radius,
+        scaleX: g.scaleX,
+        scaleY: g.scaleY,
+        tableName: tableName,
+        id: g.id,
+        snapAngle: g.snapAngle,
+        angle: o.angle
+      }
+      board.table.push(object)
+      console.log(board)
+      tableNumber++
+
+      // saving the board after object creation
+      saveBoard()
+      return g
+    }
+
+
+    function addChair(left, top, scaleX = 1, scaleY = 1, id = "xxxx", snapAngle = 45, angle = 0) {
+      const generated_id = generateId()
+      if (id === "xxxx") {
+        id = generated_id
+      }
+
+      const o = new fabric.Rect({
+        left: left,
+        top: top,
+        width: 30,
+        height: 30,
+        fill: chairFill,
+        stroke: chairStroke,
+        strokeWidth: 2,
+        shadow: chairShadow,
+        originX: 'left',
+        originY: 'top',
+        centeredRotation: true,
+        snapAngle: snapAngle,
+        selectable: true,
+        type: 'chair',
+        id: id,
+        number: chairNumber,
+        scaleX: scaleX,
+        scaleY: scaleY,
+        angle: angle
+      })
+
+      canvas.add(o)
+      object = {
+        left: o.left,
+        top: o.top,
+        width: o.width,
+        height: o.height,
+        scaleX: o.scaleX,
+        scaleY: o.scaleY,
+        id: o.id,
+        snapAngle: o.snapAngle,
+        angle: o.angle,
+      }
+      board.chair.push(object)
+      console.log(o)
+      chairNumber++
+
+      // saving the board after object creation
+      saveBoard()
+
+      return o
+    }
+
+    // function addBar(left, top, width, height, scaleX = 1, scaleY = 1, id = "xxxx", snapAngle = 45, angle = 0) {
+    //   const generated_id = generateId()
+    //   if (id === "xxxx") {
+    //     id = generated_id
+    //   }
+
+    //   const o = new fabric.Rect({
+    //     left: left,
+    //     top: top,
+    //     width: width,
+    //     height: height,
+    //     fill: barFill,
+    //     stroke: barStroke,
+    //     strokeWidth: 2,
+    //     shadow: barShadow,
+    //     originX: 'left',
+    //     originY: 'top',
+    //     centeredRotation: true,
+    //     snapAngle: snapAngle,
+    //     selectable: true,
+    //     type: 'bar',
+    //     id: id,
+    //     number: barNumber,
+    //     scaleX: scaleX,
+    //     scaleY: scaleY,
+    //     angle: angle
+    //   })
+    //   canvas.add(o)
+    //   object = {
+    //     left: o.left,
+    //     top: o.top,
+    //     width: o.width,
+    //     height: o.height,
+    //     scaleX: o.scaleX,
+    //     scaleY: o.scaleY,
+    //     id: o.id,
+    //     snapAngle: o.snapAngle,
+    //     angle: o.angle
+
+    //   }
+    //   board.bar.push(object)
+    //   console.log(board)
+    //   barNumber++
+
+    //   // saving the board after object creation
+    //   saveBoard()
+
+    //   return o
+    // }
+
+
+    function addWall(left, top, width, height, scaleX = 1, scaleY = 1, id = "xxxx", snapAngle = 45, angle = 0) {
+      const generated_id = generateId()
+      if (id === "xxxx") {
+        id = generated_id
+      }
+
+      const o = new fabric.Rect({
+        left: left,
+        top: top,
+        width: width,
+        height: height,
+        fill: wallFill,
+        stroke: wallStroke,
+        strokeWidth: 2,
+        shadow: wallShadow,
+        originX: 'left',
+        originY: 'top',
+        centeredRotation: true,
+        snapAngle: snapAngle,
+        selectable: true,
+        type: 'wall',
+        id: id,
+        number: wallNumber,
+        scaleX: scaleX,
+        scaleY: scaleY,
+        angle: angle
+      })
+      canvas.add(o)
+      object = {
+        left: o.left,
+        top: o.top,
+        width: o.width,
+        height: o.height,
+        scaleX: o.scaleX,
+        scaleY: o.scaleY,
+        id: o.id,
+        snapAngle: o.snapAngle,
+        angle: o.angle
+
+      }
+      board.wall.push(object)
+      console.log(board)
+      wallNumber++
+
+      // saving the board after object creation
+      saveBoard()
+
+      return o
+    }
+
+    function snapToGrid(target) {
+      target.set({
+        left: Math.round(target.left / (grid / 2)) * grid / 2,
+        top: Math.round(target.top / (grid / 2)) * grid / 2
+      })
+
+      if (target.type == 'rect') {
+        // grab the number (the number - 1 is the index in table list)
+        console.log(target)
+        let index = target.number - 1
+        board.table[index].left = target.left
+        board.table[index].top = target.top
+        board.table[index].width = target.width
+        board.table[index].height = target.height
+        board.table[index].scaleX = target.scaleX
+        board.table[index].scaleY = target.scaleY
+        board.table[index].snapAngle = target.snapAngle
+        board.table[index].angle = target.angle
+      }
+      else if (target.type == 'circle') {
+        // grab the number (the number - 1 is the index in table list)
+        let index = target.number - 1
+        board.table[index].left = target.left
+        board.table[index].top = target.top
+        board.table[index].radius = target.radius
+        board.table[index].scaleX = target.scaleX
+        board.table[index].scaleY = target.scaleY
+        board.table[index].snapAngle = target.snapAngle
+        board.table[index].angle = target.angle
+      }
+      else if (target.type == 'chair') {
+        // grab the number (the number - 1 is the index in chair list)
+        let index = target.number - 1
+        //console.log(board.chair)
+        //console.log(board.chair)
+        board.chair[index].left = target.left
+        board.chair[index].top = target.top
+        board.chair[index].scaleX = target.scaleX
+        board.chair[index].scaleY = target.scaleY
+        board.chair[index].snapAngle = target.snapAngle
+        board.chair[index].angle = target.angle
+      }
+      // else if (target.type == 'bar') {
+      //   // grab the number (the number - 1 is the index in bar list)
+      //   let index = target.number - 1
+      //   console.log(target.number)
+      //   board.bar[index].left = target.left
+      //   board.bar[index].top = target.top
+      //   board.bar[index].width = target.width
+      //   board.bar[index].height = target.height
+      //   board.bar[index].scaleX = target.scaleX
+      //   board.bar[index].scaleY = target.scaleY
+      //   board.bar[index].snapAngle = target.snapAngle
+      //   board.bar[index].angle = target.angle
+      // }
+      else if (target.type == 'wall') {
+        // grab the number (the number - 1 is the index in wall list)
+        let index = target.number - 1
+        board.wall[index].left = target.left
+        board.wall[index].top = target.top
+        board.wall[index].width = target.width
+        board.wall[index].height = target.height
+        board.wall[index].scaleX = target.scaleX
+        board.wall[index].scaleY = target.scaleY
+        board.wall[index].snapAngle = target.snapAngle
+        board.wall[index].angle = target.angle
+      }
+
+      // saving the board after moving the object
+      saveBoard()
+
+    }
+
+    function checkBoudningBox(e) {
+      const obj = e.target
+
+      if (!obj) {
+        return
+      }
+      obj.setCoords()
+
+      const objBoundingBox = obj.getBoundingRect()
+      if (objBoundingBox.top < 0) {
+        obj.set('top', 0)
+        obj.setCoords()
+      }
+      if (objBoundingBox.left > canvas.width - objBoundingBox.width) {
+        obj.set('left', canvas.width - objBoundingBox.width)
+        obj.setCoords()
+      }
+      if (objBoundingBox.top > canvas.height - objBoundingBox.height) {
+        obj.set('top', canvas.height - objBoundingBox.height)
+        obj.setCoords()
+      }
+      if (objBoundingBox.left < 0) {
+        obj.set('left', 0)
+        obj.setCoords()
+      }
+    }
+
+    function sendLinesToBack() {
+      canvas.getObjects().map(o => {
+        if (o.type === 'line') {
+          canvas.sendToBack(o)
+        }
+      })
+    }
+
+
+    // this function allows me to change the color of A2 with a button click
+
+    function highlightTable(tableName, color) {
+      canvas.forEachObject(function (obj) {
+        if ((obj.type === 'rect' || obj.type === 'circle') && obj.tableName === tableName) {
+          // Change the fill color of the table
+          obj.item(0).set('fill', color);
+          canvas.renderAll();
+        }
+      });
+    }
+
+    // Function to check if a key starts with "demo "
+    function startsWithDemo(key) {
+      return key.startsWith(store.slice(0, -"_restaurant_seat_arrangement".length) + "-");
+    }
+
+    // Function to read all localStorage items that start with "demo "
+
+    function readDemoItems() {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (startsWithDemo(key)) {
+          console.log(`Initial read - Key: ${key}, Value: ${localStorage.getItem(key)}`);
+          if (localStorage.getItem(key) !== "[]" && localStorage.getItem(key) !== null) {
+            //console.log("true")
+            console.log(localStorage.getItem(key) !== "[]")
+
+            highlightTable(key.slice((store.slice(0, -"_restaurant_seat_arrangement".length) + "-").length), 'rgba(0, 0, 139, 0.7)')//rich blue
+          } else {
+            //console.log("false")
+            highlightTable(key.slice((store.slice(0, -"_restaurant_seat_arrangement".length) + "-").length), 'rgba(150, 111, 51, 0.7)')//original brown
+          }
+        }
+      }
+    }
+    // Event listener for localStorage changes
+    window.addEventListener('storage', (event) => {
+      if (startsWithDemo(event.key)) {
+        // console.log(`Change detected - Key: ${event.key}, New Value: ${event.newValue}`);
+        if (event.newValue !== "[]" && event.newValue !== null && JSON.stringify(event.newValue) !== "[]") {
+          //console.log("true")
+          highlightTable(event.key.slice((store.slice(0, -"_restaurant_seat_arrangement".length) + "-").length), 'rgba(0, 0, 139, 0.7)')
+        } else {
+          //console.log("false")
+          highlightTable(event.key.slice((store.slice(0, -"_restaurant_seat_arrangement".length) + "-").length), 'rgba(150, 111, 51, 0.7)')
+        }
+      }
+    });
+
+
+    // below is the controller for the add tables buttons (circle and rectangle) and modal controller
+    let shapeToAdd = null; // this can be "rectangle", "circle", or null
+
+    document.querySelectorAll('.rectangle')[0].addEventListener('click', function () {
+      shapeToAdd = "rectangle";
+      $('#addTableModal').modal('show');
+    });
+
+    document.querySelectorAll('.circle')[0].addEventListener('click', function () {
+      shapeToAdd = "circle";
+      $('#addTableModal').modal('show');
+    });
+
+    document.getElementById('addTableBtn').addEventListener('click', function () {
+      const tableName = document.getElementById('tableName').value.trim();
+
+      // Check if table name is already present in board.table
+      const isDuplicate = board.table.some(table => table.tableName === tableName);
+
+      if (tableName.trim() === "") {
+        emptyNameAlert.style.display = 'block';
+        modalAlert.style.display = 'block';
+      } else if (isDuplicate) {
+        duplicateNameAlert.style.display = 'block';
+        modalAlert.style.display = 'block';
+        document.getElementById('tableName').value = ""; // Clear the input for the next usage
+      } else {
+        $('#addTableModal').modal('hide');
+        modalAlert.style.display = 'none'; // Hide alert
+        if (shapeToAdd === "rectangle") {
+          const o = addRect(0, 0, 60, 60, 1, 1, tableName);
+          canvas.setActiveObject(o);
+        } else if (shapeToAdd === "circle") {
+          const o = addCircle(0, 0, 30, 1, 1, tableName);  // addCircle has a similar signature
+          canvas.setActiveObject(o);
+        }
+
+      }
+    });
+
+    // the below clears the input for the next usage
+    $('#addTableModal').on('hidden.bs.modal', function () {
+      shapeToAdd = null; // Reset the shapeToAdd variable
+      document.getElementById('tableName').value = ""; // Clear the input
+    });
+
+    // here is the controller for rest of the shapes
+
+    document.querySelectorAll('.chair')[0].addEventListener('click', function () {
+      const o = addChair(0, 0, 1, 1)
+      canvas.setActiveObject(o)
+    })
+
+    // document.querySelectorAll('.bar')[0].addEventListener('click', function () {
+    //   const o = addBar(0, 0, 180, 60, 1, 1)
+    //   canvas.setActiveObject(o)
+    // })
+
+    document.querySelectorAll('.wall')[0].addEventListener('click', function () {
+      const o = addWall(0, 0, 60, 180, 1, 1)
+      canvas.setActiveObject(o)
+    })
+    function removeObjectFromBoard(id) {
+      // Loop through each category in the board
+      for (const category in board) {
+        // If the category contains the object with the given ID, remove it
+        const index = board[category].findIndex(item => item.id === id);
+        if (index !== -1) {
+          board[category].splice(index, 1);
+          return; // Exit the function since we've found and removed the item
+        }
+      }
+    }
+
+    document.querySelectorAll('.remove')[0].addEventListener('click', function () {
+      const o = canvas.getActiveObject()
+      if (o) {
+        // console.log(o.id)
+        // console.log(board)
+        removeObjectFromBoard(o.id);
+        // console.log(o)
+        o.remove()
+        canvas.remove(o)
+        canvas.discardActiveObject()
+        canvas.renderAll()
+        // console.log("remove")
+
+        // saving the board after object deletion
+        saveBoard()
+      }
+    })
+
+    let current_mode = "customer";
+
+    document.querySelectorAll('.customer-mode')[0].addEventListener('click', function () {
+      //loadBoard()
+
+      canvas.getObjects().map(o => {
+        o.hasControls = false
+        o.lockMovementX = true
+        o.lockMovementY = true
+        // if (o.type === 'chair' || o.type === 'bar' || o.type === 'wall') {
+        if (o.type === 'chair' || o.type === 'wall') {
+
+          o.selectable = false
+        }
+        o.borderColor = '#38A62E'
+        o.borderScaleFactor = 2.5
+      })
+      canvas.selection = false
+      canvas.hoverCursor = 'pointer'
+      canvas.discardActiveObject()
+      canvas.renderAll()
+      document.querySelectorAll('.admin-menu')[0].style.display = 'none'
+      document.querySelectorAll('.customer-menu')[0].style.display = 'block'
+      document.querySelectorAll('.admin_hello')[0].style.display = 'block'
+      current_mode = "customer"
+      console.log(`customer mode active`, "*")
+      window.parent.postMessage(`customer mode active`, "*");
+      window.parent.postMessage(`reload`, "*");
+
+      //location.reload()
+    })
+    document.querySelectorAll('.save-mode')[0].addEventListener('click', function () {
+      //loadBoard()
+
+      canvas.getObjects().map(o => {
+        o.hasControls = false
+        o.lockMovementX = true
+        o.lockMovementY = true
+        // if (o.type === 'chair' || o.type === 'bar' || o.type === 'wall') {
+        if (o.type === 'chair' || o.type === 'wall') {
+
+          o.selectable = false
+        }
+        o.borderColor = '#38A62E'
+        o.borderScaleFactor = 2.5
+      })
+      canvas.selection = false
+      canvas.hoverCursor = 'pointer'
+      canvas.discardActiveObject()
+      canvas.renderAll()
+      document.querySelectorAll('.admin-menu')[0].style.display = 'none'
+      document.querySelectorAll('.customer-menu')[0].style.display = 'block'
+      document.querySelectorAll('.admin_hello')[0].style.display = 'block'
+      current_mode = "customer"
+      console.log(`save mode active`, "*")
+      window.parent.postMessage(`save mode active`, "*");
+    })
+    document.querySelectorAll('.admin-mode')[0].addEventListener('click', function () {
+      canvas.getObjects().map(o => {
+        o.hasControls = true
+        o.lockMovementX = false
+        o.lockMovementY = false
+        // if (o.type === 'chair' || o.type === 'bar' || o.type === 'wall') {
+        if (o.type === 'chair' || o.type === 'wall') {
+
+          o.selectable = true
+        }
+        o.borderColor = 'rgba(102, 153, 255, 0.75)'
+        o.borderScaleFactor = 1
+      })
+      canvas.selection = true
+      canvas.hoverCursor = 'move'
+      canvas.discardActiveObject()
+      canvas.renderAll()
+
+      document.querySelectorAll('.admin-menu')[0].style.display = 'block'
+      document.querySelectorAll('.customer-menu')[0].style.display = 'none'
+      document.querySelectorAll('.admin_hello')[0].style.display = 'none'
+
+      current_mode = "admin"
+      window.parent.postMessage(`admin mode active`, "*");
+    })
+
+
+    function formatTime(val) {
+      const hours = Math.floor(val / 60)
+      const minutes = val % 60
+      const englishHours = hours > 12 ? hours - 12 : hours
+
+      const normal = hours + ':' + minutes + (minutes === 0 ? '0' : '')
+      const english = englishHours + ':' + minutes + (minutes === 0 ? '0' : '') + ' ' + (hours > 12 ? 'PM' : 'AM')
+
+      return normal + ' (' + english + ')'
+    }
+
+    document.querySelectorAll('.submit')[0].addEventListener('click', function () {
+      const obj = canvas.getActiveObject()
+      $('#modal').modal('show')
+      let modalText = 'You have not selected anything'
+      if (obj) {
+        modalText = 'You have selected table ' + obj.number + ', time: ' + formatTime(slider.noUiSlider.get())
+      }
+      document.querySelectorAll('#modal-table-id')[0].innerHTML = modalText
+    })
+
+    const slider = document.getElementById('slider')
+    noUiSlider.create(slider, {
+      start: 1200,
+      step: 15,
+      connect: 'lower',
+      range: {
+        min: 0,
+        max: 1425
+      }
+    })
+
+    const sliderValue = document.getElementById('slider-value')
+    slider.noUiSlider.on('update', function (values, handle) {
+      sliderValue.innerHTML = formatTime(values[handle])
+    })
+
+    // //
+    // let board = {
+    //   'table': [],
+    //   'chair': [],
+    //   'bar': [],
+    //   'wall' : [],
+    // }
+    // //
+    function addDefaultObjects(board) {
+
+      tables = board.table
+      // console.log(tables)
+
+      tables.forEach(element => {
+        if (element.type == 'rect') {
+          //       left, top, radius, scaleX = 1, scaleY = 1, tableName, snapAngle = 45, angle = 0
+          // left, top, width, height, scaleX = 1, scaleY = 1, tableName, snapAngle = 45
+          addRect(element.left, element.top, element.width, element.height, element.scaleX, element.scaleY, element.tableName, element.id, element.snapAngle, element.angle)
+        } else if (element.type == 'circle') {
+          addCircle(element.left, element.top, element.radius, element.scaleX, element.scaleY, element.tableName, element.id, element.snapAngle, element.angle)
+        }
+      });
+
+      // getting the chairs category from baord and adding all the chairs to canvas
+      chairs = board.chair
+      chairs.forEach(element => {
+        addChair(element.left, element.top, element.scaleX, element.scaleY, element.id, element.snapAngle, element.angle)
+      })
+
+      // getting the bars category from board and adding all the bars to canvas
+      // bars = board.bar
+      // bars.forEach(element => {
+      //   addBar(element.left, element.top, element.width, element.height, element.scaleX, element.scaleY, element.id, element.snapAngle, element.angle)
+      // })
+
+      // getting the walls category from board and adding all the walls to canvas
+      walls = board.wall
+      walls.forEach(element => {
+        addWall(element.left, element.top, element.width, element.height, element.scaleX, element.scaleY, element.id, element.snapAngle, element.angle)
+      })
+      // addChair(15, 105)
+      // addChair(15, 135)
+      // addChair(75, 105)
+      // addChair(75, 135)
+      // addChair(225, 75)
+      // addChair(255, 75)
+      // addChair(225, 135)
+      // addChair(255, 135)
+      // addChair(225, 195)
+      // addChair(255, 195)
+      // addChair(225, 255)
+      // addChair(255, 255)
+      // addChair(15, 195)
+      // addChair(45, 195)
+      // addChair(15, 255)
+      // addChair(45, 255)
+      // addChair(15, 315)
+      // addChair(45, 315)
+      // addChair(15, 375)
+      // addChair(45, 375)
+      // addChair(225, 315)
+      // addChair(255, 315)
+      // addChair(225, 375)
+      // addChair(255, 375)
+      // addChair(15, 435)
+      // addChair(15, 495)
+      // addChair(15, 555)
+      // addChair(15, 615)
+      // addChair(225, 615)
+      // addChair(255, 615)
+      // addChair(195, 495)
+      // addChair(195, 525)
+      // addChair(255, 495)
+      // addChair(255, 525)
+      // addChair(225, 675)
+      // addChair(255, 675)
+
+      // addRect(30, 90, 60, 90)
+      // addRect(210, 90, 90, 60)
+      // addRect(210, 210, 90, 60)
+      // addRect(0, 210, 90, 60)
+      // addRect(0, 330, 90, 60)
+      // addRect(210, 330, 90, 60)
+      // addRect(0, 450, 60, 60)
+      // addRect(0, 570, 60, 60)
+      // addRect(210, 480, 60, 90)
+      // addRect(210, 630, 90, 60)
+
+      // addBar(120, 0, 180, 60)
+
+      // addWall(120, 510, 60, 60)
+    }
+    addDefaultObjects()
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,76 @@
+.blue-button {
+    display: inline-block;
+    outline: none;
+    cursor: pointer;
+    padding: 0 16px;
+    background-color: #0070d2;
+    border-radius: 0.25rem;
+    border: 1px solid #0070d2;
+    color: #fff;
+    font-size: 13px;
+    line-height: 30px;
+    font-weight: 400;
+    text-align: center;
+}
+
+.blue-button:hover {
+    background-color: #005fb2;  
+    border-color: #005fb2;
+}
+/* in styles.css */
+.input-style {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+  }
+  
+  .input-style::placeholder {
+    font-weight: 250;
+    font-size: 15px;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    color: "#aab7c4";
+  }
+
+  .select-dropdown {
+    background-color: white;
+    border-radius: 2px;
+  }
+  .select-dropdown select {
+    color: white;
+    background-color: transparent;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+  .select-dropdown select:active, .select-dropdown select:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  .select-dropdown:after {
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid white;
+  }
+  .phone-field {
+    margin: 10px;
+    font-size: 20px;
+  }
+  
+  .phone-input {
+    width: 13px;
+    text-align: center;
+    font-size: 16px !important;
+    height: 1.75em;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    border-bottom: 2px solid #ddd;
+    margin-right: 2px;
+    margin-left: 2px;
+  }
+  
+  [placeholder]:focus::-webkit-input-placeholder {
+    transition: opacity 0.5s 0.0s ease;
+    opacity: 0;
+  }

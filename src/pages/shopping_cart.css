@@ -1,0 +1,249 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500);
+
+* {
+  box-sizing: border-box;
+}
+
+.shopping-cart {
+  width: 550px;
+  margin: -25px auto;
+  /* new code */
+  background: #FFFFFF;
+  box-shadow: 1px 2px 3px 0px rgba(0, 0, 0, 0.10);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.5s ease;
+  opacity: 1;
+  transform: scale(1);
+  visibility: visible;
+}
+
+
+
+.title {
+  border-bottom: 1px solid #E1E8EE;
+  padding: 20px 30px;
+  color: #5E6977;
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.item {
+  border-top: 1px solid #E1E8EE;
+  padding: 20px 30px;
+  height: 120px;
+  display: flex;
+  border-bottom: 1px solid #E1E8EE;
+}
+
+.dashed-line {
+  flex-grow: 1;
+  /* Allows the div to take up any available space */
+  margin: 0 10px;
+  /* Add some horizontal spacing */
+  border-top: 1px dashed #ccc;
+  /* Creates a dashed line at the top */
+}
+
+/* Buttons -  Delete and Like */
+.buttons {
+  position: relative;
+  padding-top: 30px;
+}
+
+.delete-btn {
+  display: inline-block;
+  cursor: pointer;
+  width: 18px;
+  height: 17px;
+  background: url("delete-icn.svg") no-repeat center;
+  margin-right: 20px;
+}
+
+.like-btn {
+  position: absolute;
+  top: 9px;
+  left: 15px;
+  display: inline-block;
+  background: url('twitter-heart.png');
+  width: 60px;
+  height: 60px;
+  background-size: 2900%;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.is-active {
+  animation-name: animate;
+  animation-duration: .8s;
+  animation-iteration-count: 1;
+  animation-timing-function: steps(28);
+  animation-fill-mode: forwards;
+}
+
+@keyframes animate {
+  0% {
+    background-position: left;
+  }
+
+  50% {
+    background-position: right;
+  }
+
+  100% {
+    background-position: right;
+  }
+}
+
+/* Product Image */
+.image {
+  /* width: 35%; */
+  margin-right: 5px
+}
+
+/* Product Description */
+/* .description {
+  padding-top: 10px;
+  margin-right: 60px;
+  width: 115px;
+} */
+
+.description span {
+  display: block;
+  font-size: 14px;
+  color: #43484D;
+  font-weight: 400;
+}
+
+.description span:first-child {
+  font-size: 17px;
+  margin-bottom: 5px;
+}
+
+.description span:last-child {
+  font-size: 17px;
+  font-weight: 300;
+  margin-top: 8px;
+  color: #86939E;
+}
+
+/* Product Quantity */
+.quantity {
+  padding-top: 20px;
+  margin-right: 60px;
+}
+
+.quantity input {
+  -webkit-appearance: none;
+  border: none;
+  text-align: center;
+  width: 32px;
+  font-size: 32px;
+  color: #43484D;
+  font-weight: 300;
+}
+
+
+.minus-btn img {
+  margin-bottom: 3px;
+}
+
+.plus-btn img {
+  margin-top: 2px;
+}
+
+/* Total Price */
+.total-price {
+  width: 83px;
+  padding-top: 27px;
+  text-align: center;
+  font-size: 16px;
+  color: #43484D;
+  font-weight: 300;
+}
+
+.black_hover {
+  transition: background-color 0.3s ease;
+}
+
+.black_hover:hover {
+  background-color: rgba(221, 228, 236, 0.301);
+}
+
+/* Responsive */
+@media (max-width: 575px) {
+  .shopping-cart {
+    min-height: 200px;
+    width: 100%;
+    /* height: 423px; */
+    /* margin: 250px auto;  */
+    /* conflicts with fixed position bottom for shopping cart mobile */
+    /* new code */
+    background: #FFFFFF;
+    box-shadow: 1px 2px 3px 0px rgba(0, 0, 0, 0.10);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.5s ease;
+    opacity: 1;
+    transform: scale(1);
+    visibility: visible;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    max-height: 100%;
+    overflow-y: auto;
+    padding-bottom: 25px;
+    /* Add padding to create space around the content */
+    box-sizing: border-box;
+    /* Include padding in the total width and height calculations */
+    min-height: 150px;
+  }
+
+  /* Product Quantity */
+  .quantity {
+    /* position: absolute;
+  margin-top: 30px;
+  margin-left: 240px; */
+    padding-top: 0px;
+  }
+
+}
+
+.image-container {
+  width: 90px;
+  height: 90px;
+  overflow: hidden;
+}
+
+.image-container img {
+  object-fit: cover;
+  object-position: center;
+  width: 100%;
+  height: 100%;
+}
+
+/*google translate*/
+body>.skiptranslate {
+  display: none;
+}
+
+body {
+  top: 0px !important;
+}
+
+.VIpgJd-ZVi9od-l4eHX-hSRGPd {
+  display: none;
+
+}
+
+.goog-logo-link {
+  display: none !important;
+}
+
+.goog-te-gadget {
+  font-size: 0px !important;
+}
